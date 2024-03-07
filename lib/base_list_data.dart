@@ -4,7 +4,6 @@ import 'package:base_list_data/api_throw.dart';
 
 class BaseListData<T, Y> {
   final Function(ApiThrow e) onError;
-  final void Function(void Function()) onRerender;
   final Future<List<T>> Function(int page, int limit) onLoadMore;
   final Y key;
   final List<T> initList;
@@ -13,13 +12,13 @@ class BaseListData<T, Y> {
     required this.key,
     this.limit = 10,
     this.initList = const [],
-    required this.onRerender,
     required this.onLoadMore,
     required this.onError,
   }) {
     list.addAll(initList);
   }
 
+  void Function(void Function())? onRerender;
   final List<T> list = [];
   bool max = false;
   int limit;
@@ -36,7 +35,7 @@ class BaseListData<T, Y> {
     try {
       if (!reset && (_loading || max)) return;
 
-      onRerender(() {
+      onRerender?.call(() {
         _loading = true;
         error = null;
 
@@ -55,7 +54,7 @@ class BaseListData<T, Y> {
 
       if (currentCount != _count) return;
 
-      onRerender(() {
+      onRerender?.call(() {
         list.addAll(r);
         onLoadDone?.call(r);
         _page += 1;
@@ -64,7 +63,7 @@ class BaseListData<T, Y> {
         if (r.length < limit) max = true;
       });
     } on ApiThrow catch (e) {
-      onRerender(() {
+      onRerender?.call(() {
         _loading = false;
         error = e.name;
       });
@@ -76,7 +75,7 @@ class BaseListData<T, Y> {
   void updateItem(int i, T newData) {
     if (i == -1) return;
 
-    onRerender(() {
+    onRerender?.call(() {
       list.removeAt(i);
       list.insert(i, newData);
     });
