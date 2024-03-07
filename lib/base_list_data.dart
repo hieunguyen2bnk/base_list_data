@@ -3,7 +3,7 @@ library base_list_data;
 import 'package:base_list_data/api_throw.dart';
 
 class BaseListData<T, Y> {
-  final Function(ApiThrow e) onError;
+  final Function(ApiThrow e)? onError;
   final Future<List<T>> Function(int page, int limit) onLoadMore;
   final Y key;
   final List<T> initList;
@@ -14,7 +14,7 @@ class BaseListData<T, Y> {
     this.initList = const [],
     void Function(void Function())? onRerender,
     required this.onLoadMore,
-    required this.onError,
+    this.onError,
   }) : _render = onRerender {
     list.addAll(initList);
   }
@@ -71,7 +71,7 @@ class BaseListData<T, Y> {
         error = e.name;
       });
 
-      onError(e);
+      onError?.call(e);
     }
   }
 
