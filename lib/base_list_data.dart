@@ -26,6 +26,7 @@ class BaseListData<T, Y> {
   bool _loading = false;
   int _page = 0;
   int _count = 0;
+  String? error;
 
   bool get loadingMore => _page > 0 && _loading;
 
@@ -37,6 +38,7 @@ class BaseListData<T, Y> {
 
       onRerender(() {
         _loading = true;
+        error = null;
 
         if (reset) {
           list.clear();
@@ -63,6 +65,7 @@ class BaseListData<T, Y> {
     } on ApiThrow catch (e) {
       onRerender(() {
         _loading = false;
+        error = e.name;
       });
 
       onError(e);
