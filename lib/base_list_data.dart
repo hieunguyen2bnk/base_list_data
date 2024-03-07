@@ -12,13 +12,14 @@ class BaseListData<T, Y> {
     required this.key,
     this.limit = 10,
     this.initList = const [],
+    void Function(void Function())? onRerender,
     required this.onLoadMore,
     required this.onError,
-  }) {
+  }) : _render = onRerender {
     list.addAll(initList);
   }
 
-  void Function(void Function())? onRerender;
+  void Function(void Function())? _render;
   final List<T> list = [];
   bool max = false;
   int limit;
@@ -26,6 +27,8 @@ class BaseListData<T, Y> {
   int _page = 0;
   int _count = 0;
   String? error;
+
+  void Function(void Function()) get _reRender => _render ?? (v) => v();
 
   bool get loadingMore => _page > 0 && _loading;
 
@@ -35,7 +38,7 @@ class BaseListData<T, Y> {
     try {
       if (!reset && (_loading || max)) return;
 
-      onRerender?.call(() {
+      _reRender(() {
         _loading = true;
         error = null;
 
@@ -54,7 +57,7 @@ class BaseListData<T, Y> {
 
       if (currentCount != _count) return;
 
-      onRerender?.call(() {
+      _reRender(() {
         list.addAll(r);
         onLoadDone?.call(r);
         _page += 1;
@@ -63,7 +66,7 @@ class BaseListData<T, Y> {
         if (r.length < limit) max = true;
       });
     } on ApiThrow catch (e) {
-      onRerender?.call(() {
+      _reRender(() {
         _loading = false;
         error = e.name;
       });
@@ -75,9 +78,13 @@ class BaseListData<T, Y> {
   void updateItem(int i, T newData) {
     if (i == -1) return;
 
-    onRerender?.call(() {
+    _reRender(() {
       list.removeAt(i);
       list.insert(i, newData);
     });
+  }
+
+  void setFncRender(void Function(void Function()) v) {
+    _render = v;
   }
 }
