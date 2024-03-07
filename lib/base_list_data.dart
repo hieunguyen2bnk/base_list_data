@@ -32,7 +32,7 @@ class BaseListData<T, Y> {
 
   bool get loading => _page == 0 && _loading;
 
-  Future<void> getList({reset = false}) async {
+  Future<void> getList({reset = false, Function(List<T>)? onLoadDone}) async {
     try {
       if (!reset && (_loading || max)) return;
 
@@ -57,6 +57,7 @@ class BaseListData<T, Y> {
 
       onRerender(() {
         list.addAll(r);
+        onLoadDone?.call(r);
         _page += 1;
         _loading = false;
 
