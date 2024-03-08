@@ -8,8 +8,8 @@ class BaseListData<T, Y> {
   final Y? key;
   final List<T> initList;
 
-  BaseListData({
-    required this.onLoadMore,
+  BaseListData(
+    this.onLoadMore, {
     this.key,
     this.limit = 10,
     this.initList = const [],
