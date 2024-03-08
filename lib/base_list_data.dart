@@ -5,15 +5,15 @@ import 'package:base_list_data/api_throw.dart';
 class BaseListData<T, Y> {
   final Function(ApiThrow e)? onError;
   final Future<List<T>> Function(int page, int limit) onLoadMore;
-  final Y key;
+  final Y? key;
   final List<T> initList;
 
   BaseListData({
-    required this.key,
+    required this.onLoadMore,
+    this.key,
     this.limit = 10,
     this.initList = const [],
     void Function(void Function())? onRerender,
-    required this.onLoadMore,
     this.onError,
   }) : _render = onRerender {
     list.addAll(initList);
